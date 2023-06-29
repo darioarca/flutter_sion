@@ -1,0 +1,158 @@
+import 'package:first_login_test/pages/login_page.dart';
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+void main() {
+  runApp(MaterialApp(
+    title: 'FastAPI Flutter Demo',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+    home: HomeScreen(),
+  ));
+}
+
+class HomeScreen extends StatelessWidget {
+  // Esta es la función principal de tu aplicación
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('FastAPI Flutter Demo'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                // Realiza la solicitud de login y muestra el resultado en la consola.
+                //login('myusername', 'mypassword');
+                Navigator.push(
+                  //opens another page
+                  context,
+                  MaterialPageRoute(builder: (context) => MyLoginPage()),
+                );
+              },
+              child: Text('Login'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Realiza la solicitud de registro de usuario y muestra el resultado en la consola.
+                createUser('newusername', 'newemail@gmail.com', 'newpassword');
+              },
+              child: Text('Create User'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Realiza la solicitud de recuperación de contraseña y muestra el resultado en la consola.
+                passwordRecovery('email@gmail.com');
+              },
+              child: Text('Password Recovery'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Realiza la solicitud de restablecimiento de contraseña y muestra el resultado en la consola.
+                resetPassword('mytoken', 'newpassword', 'email@gmail.com');
+              },
+              child: Text('Reset Password'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Realiza la solicitud de cierre de sesión y muestra el resultado en la consola.
+                logout();
+              },
+              child: Text('Logout'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Future<void> login(String username, String password) async {
+  //   final response = await http.post(
+  //     Uri.parse('http://localhost:8000/token'),
+  //     headers: <String, String>{
+  //       'Content-Type': 'application/x-www-form-urlencoded',
+  //     },
+  //     body: {
+  //       'username': username,
+  //       'password': password,
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     print(jsonDecode(response.body));
+  //   } else {
+  //     throw Exception('Failed to login');
+  //   }
+  // }
+
+  Future<void> createUser(
+      String username, String email, String password) async {
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/users/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to create user');
+    }
+  }
+
+  Future<void> passwordRecovery(String email) async {
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/password-recovery/$email'),
+    );
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to recover password');
+    }
+  }
+
+  Future<void> resetPassword(
+      String token, String newPassword, String email) async {
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/reset-password'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'token': token,
+        'new_password': newPassword,
+        'email': email,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to reset password');
+    }
+  }
+
+  Future<void> logout() async {
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/logout'),
+    );
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to logout');
+    }
+  }
+}

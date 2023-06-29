@@ -1,0 +1,32 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class AuthController {
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  Future<void> login() async {
+    final _url = 'http://127.0.0.1:8000/token';
+
+    var response = await http.post(
+      Uri.parse(_url),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: jsonEncode({
+        'username': usernameController.text,
+        'password': passwordController.text,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var loginArr = jsonDecode(response.body);
+      print(loginArr[
+          'access_token']); //i have to save the token somewhere to actually log the user
+    } else {
+      throw Exception('Failed to login');
+    }
+  }
+}
