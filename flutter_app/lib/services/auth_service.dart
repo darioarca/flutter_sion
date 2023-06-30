@@ -96,3 +96,44 @@ Future<Map<String, dynamic>?> register(
     return null;
   }
 }
+
+Future<bool> changePassword(String oldPassword, String newPassword) async {
+  final storage = FlutterSecureStorage();
+  var accessToken = await storage.read(key: 'access_token');
+  var response = await http.post(
+    Uri.parse('http://localhost:8000/change_password'),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    },
+    body: jsonEncode({
+      'old_password': oldPassword,
+      'new_password': newPassword,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    throw Exception('Failed to change password');
+  }
+}
+
+Future<bool> logout() async {
+  final storage = FlutterSecureStorage();
+  var accessToken = await storage.read(key: 'access_token');
+  var response = await http.post(
+    Uri.parse('http://localhost:8000/logout'),
+    headers: <String, String>{
+      'Authorization': 'Bearer $accessToken',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    await storage.deleteAll();
+
+    return true;
+  } else {
+    throw Exception('Failed to logout');
+  }
+}
