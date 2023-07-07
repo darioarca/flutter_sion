@@ -11,7 +11,7 @@ class AdminScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text('Admin Screen'),
         ),
-        body: Center(
+        body: SingleChildScrollView(
           child: Column(children: <Widget>[
             FutureBuilder(
               future: getUserData(),

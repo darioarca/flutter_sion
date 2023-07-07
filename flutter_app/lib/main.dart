@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/landing_page.dart';
+import 'screens/login_page.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: LandingScreen(),
+    home: LoginPage(),
   ));
 }

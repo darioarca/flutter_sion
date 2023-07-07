@@ -70,13 +70,14 @@ Future<Map<String, dynamic>?> refreshAccessToken() async {
 }
 
 Future<Map<String, dynamic>?> register(
-    String username, String email, String password) async {
+    String username, String email, String password, String confPassword) async {
   var response = await http.post(
     Uri.parse('http://localhost:8000/users'),
     body: jsonEncode({
       'NombreUsuario': username,
       'CorreoElectronico': email,
       'Contrasena': password,
+      'ConfirmarContrasena': confPassword,
     }),
     headers: {
       'Content-Type': 'application/json',
